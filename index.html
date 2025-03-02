@@ -3,127 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Bench Press PR Calculator</title>
-    
+    <title>Bench Press PR and Strength Calculator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        input {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        #result, #ratioResult {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        hr {
-            margin: 20px 0;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        .result { margin-top: 20px; font-size: 18px; }
+        .section { margin-bottom: 40px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Bench Press PR Calculator</h1>
-    <p>Enter the weight lifted and the number of reps to estimate your 1-rep max.</p>
+    <h1>Bench Press PR and Strength Calculator</h1>
 
-    <label for="weight">Weight Lifted (lbs/kg):</label>
-    <input type="number" id="weight" placeholder="Enter weight lifted" required>
+    <!-- Bench Press PR Calculator Section -->
+    <div class="section">
+        <h2>1. Calculate Your Bench Press PR</h2>
+        <label for="weight">Enter the weight you can lift (lbs):</label>
+        <input type="number" id="weight" placeholder="Weight lifted (lbs)">
+        
+        <label for="reps">Enter how many reps you can do with that weight:</label>
+        <input type="number" id="reps" placeholder="Number of reps">
 
-    <label for="reps">Reps Performed:</label>
-    <input type="number" id="reps" placeholder="Enter reps" required>
+        <button onclick="calculatePR()">Calculate PR</button>
 
-    <button onclick="calculatePR()">Calculate 1RM</button>
+        <div class="result" id="prResult"></div>
+    </div>
 
-    <p id="result"></p>
+    <!-- Weight to Strength Ratio Section -->
+    <div class="section">
+        <h2>2. Weight-to-Strength Ratio Calculator</h2>
+        <label for="bodyWeight">Enter your body weight (lbs):</label>
+        <input type="number" id="bodyWeight" placeholder="Your body weight (lbs)">
+        
+        <button onclick="calculateRatio()">Calculate Strength-to-Weight Ratio</button>
 
-    <hr>
+        <div class="result" id="ratioResult"></div>
+    </div>
 
-    <h2>Weight-to-Strength Ratio</h2>
-    <p>Enter your body weight and bench press max to calculate your weight-to-strength ratio.</p>
+    <!-- Lifting Experience Estimator Section -->
+    <div class="section">
+        <h2>3. Lifting Experience Estimator</h2>
+        <button onclick="estimateExperience()">Estimate Lifting Experience</button>
 
-    <label for="bodyWeight">Your Body Weight (lbs/kg):</label>
-    <input type="number" id="bodyWeight" placeholder="Enter your body weight" required>
+        <div class="result" id="experienceResult"></div>
+    </div>
 
-    <label for="benchMax">Your Bench Press Max (lbs/kg):</label>
-    <input type="number" id="benchMax" placeholder="Enter your bench press max" required>
+    <script>
+        // Variable to store the calculated PR (1RM)
+        let calculatedPR = 0;
 
-    <button onclick="calculateWeightStrengthRatio()">Calculate Ratio</button>
+        // Bench Press PR Calculator (Using Epley Formula)
+        function calculatePR() {
+            const weight = parseFloat(document.getElementById("weight").value);
+            const reps = parseFloat(document.getElementById("reps").value);
 
-    <p id="ratioResult"></p>
-</div>
+            if (!weight || !reps || reps <= 0) {
+                alert("Please enter both the weight and reps.");
+                return;
+            }
 
-<script>
-    // Function to calculate the 1-Rep Max (1RM)
-    function calculatePR() {
-        let weight = parseFloat(document.getElementById("weight").value);
-        let reps = parseInt(document.getElementById("reps").value);
+            // Epley formula to calculate 1RM (PR)
+            calculatedPR = weight * (1 + (0.0333 * reps));
 
-        if (isNaN(weight) || isNaN(reps) || weight <= 0 || reps <= 0) {
-            document.getElementById("result").innerHTML = "Please enter valid numbers!";
-            return;
+            // Display the calculated 1RM (PR)
+            document.getElementById("prResult").innerText = `Your estimated Bench Press 1RM (PR) is: ${calculatedPR.toFixed(2)} lbs`;
         }
 
-        let oneRepMax = weight * (1 + reps / 30);
-        document.getElementById("result").innerHTML = 
-            `Estimated 1-Rep Max: <strong>${oneRepMax.toFixed(2)}</strong> lbs/kg`;
-    }
+        // Weight-to-Strength Ratio Calculator
+        function calculateRatio() {
+            const bodyWeight = parseFloat(document.getElementById("bodyWeight").value);
 
-    // Function to calculate the Weight-to-Strength Ratio
-    function calculateWeightStrengthRatio() {
-        let bodyWeight = parseFloat(document.getElementById("bodyWeight").value);
-        let benchMax = parseFloat(document.getElementById("benchMax").value);
+            if (!bodyWeight || !calculatedPR) {
+                alert("Please enter your body weight and calculate your Bench Press PR first.");
+                return;
+            }
 
-        if (isNaN(bodyWeight) || isNaN(benchMax) || bodyWeight <= 0 || benchMax <= 0) {
-            document.getElementById("ratioResult").innerHTML = "Please enter valid numbers!";
-            return;
+            // Calculate the strength-to-weight ratio
+            const ratio = calculatedPR / bodyWeight;
+
+            // Display the result
+            document.getElementById("ratioResult").innerText = `Your strength-to-weight ratio is: ${ratio.toFixed(2)}`;
         }
 
-        let ratio = benchMax / bodyWeight;
-        document.getElementById("ratioResult").innerHTML = 
-            `Your Weight-to-Strength Ratio: <strong>${ratio.toFixed(2)}</strong>`;
-    }
-</script>
+        // Lifting Experience Estimator
+        function estimateExperience() {
+            const weight = parseFloat(document.getElementById("weight").value);
+            const pr = calculatedPR;
+
+            if (!weight || !pr) {
+                alert("Please enter both your weight and PR.");
+                return;
+            }
+
+            // Calculate the strength-to-weight ratio
+            const ratio = pr / weight;
+
+            // Estimate lifting experience based on the ratio
+            let experience = "Unknown experience";
+            if (ratio < 1.25) {
+                experience = "Beginner (0-6 months)";
+            } else if (ratio >= 1.25 && ratio < 1.5) {
+                experience = "Intermediate (6 months - 2 years)";
+            } else if (ratio >= 1.5 && ratio < 1.75) {
+                experience = "Advanced (2-4 years)";
+            } else {
+                experience = "Elite (4+ years)";
+            }
+
+            // Display the estimated lifting experience
+            document.getElementById("experienceResult").innerText = `Estimated lifting experience: ${experience}`;
+        }
+    </script>
 
 </body>
 </html>
