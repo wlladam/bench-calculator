@@ -3,117 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bench Press PR and Strength Calculator</title>
+    <title>Typing Speed Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
-        input, button { padding: 10px; margin: 10px; }
-        .result { margin-top: 20px; font-size: 18px; }
-        .section { margin-bottom: 40px; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        #sentence {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        #inputBox {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        #inputBox.correct {
+            border-color: green;
+        }
+        #inputBox.wrong {
+            border-color: red;
+        }
+        .options {
+            margin: 15px 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #444;
+        }
     </style>
 </head>
 <body>
-
-    <h1>Bench Press PR and Strength Calculator</h1>
-
-    <!-- Bench Press PR Calculator Section -->
-    <div class="section">
-        <h2>1. Calculate Your Bench Press PR</h2>
-        <label for="weight">Enter the weight you can lift (lbs):</label>
-        <input type="number" id="weight" placeholder="Weight lifted (lbs)">
-        
-        <label for="reps">Enter how many reps you can do with that weight:</label>
-        <input type="number" id="reps" placeholder="Number of reps">
-
-        <button onclick="calculatePR()">Calculate PR</button>
-
-        <div class="result" id="prResult"></div>
-    </div>
-
-    <!-- Weight to Strength Ratio Section -->
-    <div class="section">
-        <h2>2. Weight-to-Strength Ratio Calculator</h2>
-        <label for="bodyWeight">Enter your body weight (lbs):</label>
-        <input type="number" id="bodyWeight" placeholder="Your body weight (lbs)">
-        
-        <button onclick="calculateRatio()">Calculate Strength-to-Weight Ratio</button>
-
-        <div class="result" id="ratioResult"></div>
-    </div>
-
-    <!-- Lifting Experience Estimator Section -->
-    <div class="section">
-        <h2>3. Lifting Experience Estimator</h2>
-        <button onclick="estimateExperience()">Estimate Lifting Experience</button>
-
-        <div class="result" id="experienceResult"></div>
+    <div class="container">
+        <h1>Typing Speed Test</h1>
+        <div class="options">
+            <label>
+                <input type="checkbox" id="togglePunctuation" onchange="startTest()"> Disable Punctuation
+            </label>
+            <br>
+            <label>Number of Sentences: 
+                <input type="number" id="sentenceCount" min="1" max="5" value="1" onchange="startTest()">
+            </label>
+        </div>
+        <p id="sentence"></p>
+        <input type="text" id="inputBox" placeholder="Start typing..." oninput="checkTyping()">
+        <p id="result"></p>
+        <button onclick="startTest()">New Sentence</button>
     </div>
 
     <script>
-        // Variable to store the calculated PR (1RM)
-        let calculatedPR = 0;
+        const sentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Typing speed tests are fun and engaging.",
+            "Practice makes perfect when it comes to typing.",
+            "A journey of a thousand miles begins with a single step.",
+            "Improve your typing speed with daily exercises."
+        ];
+        let startTime;
+        let selectedSentences = [];
 
-        // Bench Press PR Calculator (Using Epley Formula)
-        function calculatePR() {
-            const weight = parseFloat(document.getElementById("weight").value);
-            const reps = parseFloat(document.getElementById("reps").value);
-
-            if (!weight || !reps || reps <= 0) {
-                alert("Please enter both the weight and reps.");
-                return;
+        function startTest() {
+            let count = parseInt(document.getElementById("sentenceCount").value);
+            let disablePunctuation = document.getElementById("togglePunctuation").checked;
+            selectedSentences = [];
+            
+            while (selectedSentences.length < count) {
+                let sentence = sentences[Math.floor(Math.random() * sentences.length)];
+                if (disablePunctuation) {
+                    sentence = sentence.replace(/[.,!?]/g, "").toLowerCase();
+                }
+                selectedSentences.push(sentence);
             }
-
-            // Epley formula to calculate 1RM (PR)
-            calculatedPR = weight * (1 + (0.0333 * reps));
-
-            // Display the calculated 1RM (PR)
-            document.getElementById("prResult").innerText = `Your estimated Bench Press 1RM (PR) is: ${calculatedPR.toFixed(2)} lbs`;
+            
+            document.getElementById("sentence").textContent = selectedSentences.join(" ");
+            document.getElementById("inputBox").value = "";
+            document.getElementById("result").textContent = "";
+            document.getElementById("inputBox").className = "";
+            startTime = new Date().getTime();
         }
 
-        // Weight-to-Strength Ratio Calculator
-        function calculateRatio() {
-            const bodyWeight = parseFloat(document.getElementById("bodyWeight").value);
-
-            if (!bodyWeight || !calculatedPR) {
-                alert("Please enter your body weight and calculate your Bench Press PR first.");
-                return;
-            }
-
-            // Calculate the strength-to-weight ratio
-            const ratio = calculatedPR / bodyWeight;
-
-            // Display the result
-            document.getElementById("ratioResult").innerText = `Your strength-to-weight ratio is: ${ratio.toFixed(2)}`;
-        }
-
-        // Lifting Experience Estimator
-        function estimateExperience() {
-            const weight = parseFloat(document.getElementById("weight").value);
-            const pr = calculatedPR;
-
-            if (!weight || !pr) {
-                alert("Please enter both your weight and PR.");
-                return;
-            }
-
-            // Calculate the strength-to-weight ratio
-            const ratio = pr / weight;
-
-            // Estimate lifting experience based on the ratio
-            let experience = "Unknown experience";
-            if (ratio < 1.25) {
-                experience = "Beginner (0-6 months)";
-            } else if (ratio >= 1.25 && ratio < 1.5) {
-                experience = "Intermediate (6 months - 2 years)";
-            } else if (ratio >= 1.5 && ratio < 1.75) {
-                experience = "Advanced (2-4 years)";
+        function checkTyping() {
+            let inputBox = document.getElementById("inputBox");
+            let typedText = inputBox.value;
+            let fullText = selectedSentences.join(" ");
+            
+            if (typedText === fullText) {
+                let endTime = new Date().getTime();
+                let timeTaken = (endTime - startTime) / 1000;
+                let words = fullText.split(" ").length;
+                let speed = Math.round((words / timeTaken) * 60);
+                let accuracy = calculateAccuracy(typedText, fullText);
+                document.getElementById("result").textContent = `Speed: ${speed} WPM | Accuracy: ${accuracy}%`;
+                inputBox.className = "correct";
             } else {
-                experience = "Elite (4+ years)";
+                inputBox.className = typedText === fullText.substring(0, typedText.length) ? "" : "wrong";
             }
-
-            // Display the estimated lifting experience
-            document.getElementById("experienceResult").innerText = `Estimated lifting experience: ${experience}`;
         }
-    </script>
 
+        function calculateAccuracy(typed, original) {
+            let correctChars = 0;
+            for (let i = 0; i < typed.length; i++) {
+                if (typed[i] === original[i]) {
+                    correctChars++;
+                }
+            }
+            return Math.round((correctChars / original.length) * 100);
+        }
+
+        startTest();
+    </script>
 </body>
 </html>
+
