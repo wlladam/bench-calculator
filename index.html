@@ -9,11 +9,19 @@
         body {
             font-family: 'Poppins', sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background: linear-gradient(135deg, #667eea, #764ba2);
             margin: 0;
+            text-align: center;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
         }
         .container {
             background: #fff;
@@ -35,16 +43,19 @@
             color: #333;
         }
         #inputBox {
-            width: 100%;
+            width: calc(100% - 24px);
             padding: 12px;
             font-size: 16px;
             border: 2px solid #ddd;
             border-radius: 5px;
             outline: none;
             transition: border 0.3s;
+            display: block;
+            margin: 0 auto;
         }
         #inputBox.correct {
             border-color: green;
+            animation: bounce 0.3s ease;
         }
         #inputBox.wrong {
             border-color: red;
@@ -70,12 +81,30 @@
             font-size: 18px;
             font-weight: 600;
             color: #444;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: white;
+            font-weight: 600;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
     </style>
 </head>
 <body>
+    <div class="title">Typing Speed Test</div>
     <div class="container">
-        <h1>Typing Speed Test</h1>
+        <h1>Test Your Typing Skills</h1>
         <div class="options">
             <label>
                 <input type="checkbox" id="togglePunctuation" onchange="startTest()"> Disable Punctuation
@@ -90,7 +119,8 @@
         <p id="result"></p>
         <button onclick="startTest()">New Sentence</button>
     </div>
-
+    <div class="footer">Created By Will Adam</div>
+    
     <script>
         const sentences = [
             "The quick brown fox jumps over the lazy dog.",
@@ -118,6 +148,7 @@
             document.getElementById("sentence").textContent = selectedSentences.join(" ");
             document.getElementById("inputBox").value = "";
             document.getElementById("result").textContent = "";
+            document.getElementById("result").classList.remove("show");
             document.getElementById("inputBox").className = "";
             startTime = new Date().getTime();
         }
@@ -133,7 +164,9 @@
                 let words = fullText.split(" ").length;
                 let speed = Math.round((words / timeTaken) * 60);
                 let accuracy = calculateAccuracy(typedText, fullText);
-                document.getElementById("result").textContent = `Speed: ${speed} WPM | Accuracy: ${accuracy}%`;
+                let resultElement = document.getElementById("result");
+                resultElement.textContent = `Speed: ${speed} WPM | Accuracy: ${accuracy}%`;
+                resultElement.classList.add("show");
                 inputBox.className = "correct";
             } else {
                 inputBox.className = typedText === fullText.substring(0, typedText.length) ? "" : "wrong";
@@ -154,4 +187,3 @@
     </script>
 </body>
 </html>
-
